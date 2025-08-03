@@ -156,7 +156,7 @@ class DropboxToThreadsUploader:
             }
 
             # Optional: Extra wait for first account
-            if self.account_name == "eclipsed.by.you":
+            if self.account_name == "arul":
                 self.send_message("⏳ Extra wait before publishing for first account...", level=logging.INFO)
                 time.sleep(5)
 
