@@ -7,23 +7,5 @@
     "Friday": { "caption": "#SongOfTheDay\nIf you're not following me, then we'll never meet again!" },
     "Saturday": { "caption": "#SadSongs\nIf you're not following me, then we'll never meet again!" },
     "Sunday": { "caption": "#relatable\nIf you're not following me, then we'll never meet again!" }
-  },
-  "inkwisp": {
-    "Monday": { "caption": "#threadsquotes\nIf you're not following me, then we'll never meet again!" },
-    "Tuesday": { "caption": "#DeepThoughts\nIf you're not following me, then we'll never meet again!" },
-    "Wednesday": { "caption": "#threads\nIf you're not following me, then we'll never meet again!" },
-    "Thursday": { "caption": "#quotes\nIf you're not following me, then we'll never meet again!" },
-    "Friday": { "caption": "#relationship\nIf you're not following me, then we'll never meet again!" },
-    "Saturday": { "caption": "#WritersOfThreads\nIf you're not following me, then we'll never meet again!" },
-    "Sunday": { "caption": "#love\nIf you're not following me, then we'll never meet again!" }
-  },
-  "ink_wisps": {
-    "Monday": { "caption": "#threads\nIf you're not following me, then we'll never meet again!" },
-    "Tuesday": { "caption": "#RelatableMemes\nIf you're not following me, then we'll never meet again!" },
-    "Wednesday": { "caption": "#funny\nIf you're not following me, then we'll never meet again!" },
-    "Thursday": { "caption": "#comedy\nIf you're not following me, then we'll never meet again!" },
-    "Friday": { "caption": "#threads\nIf you're not following me, then we'll never meet again!" },
-    "Saturday": { "caption": "#DankMemes\nIf you're not following me, then we'll never meet again!" },
-    "Sunday": { "caption": "#trending\nIf you're not following me, then we'll never meet again!" }
   }
 }
