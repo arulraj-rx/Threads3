@@ -1,0 +1,42 @@
+name: inkwisp threads
+
+on:
+  workflow_dispatch:  # Manual run button
+  
+  schedule:
+  - cron: '15 1 * * *'   # 06:45 AM IST   
+  - cron: '0 15 * * *'   # 08:30 PM IST  
+  
+
+
+jobs:
+  post-to-threads:
+    runs-on: ubuntu-latest
+
+    env:
+      THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+      THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+      DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+      DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+      DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+
+
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dropbox python-telegram-bot==13.15 requests pytz
+
+      - name: Run Dropbox to Threads script
+        run: python "eclipse.py"
