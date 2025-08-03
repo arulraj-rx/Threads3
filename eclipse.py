@@ -79,9 +79,17 @@ class DropboxToThreadsUploader:
         return r.json().get("access_token")
 
     def list_dropbox_files(self, dbx):
-        files = dbx.files_list_folder(self.dropbox_folder).entries
         valid_exts = ('.mp4', '.mov', '.jpg', '.jpeg', '.png')
-        return [f for f in files if f.name.lower().endswith(valid_exts)]
+        files = []
+        try:
+            result = dbx.files_list_folder(self.dropbox_folder)
+            files.extend([f for f in result.entries if f.name.lower().endswith(valid_exts)])
+            while result.has_more:
+                result = dbx.files_list_folder_continue(result.cursor)
+                files.extend([f for f in result.entries if f.name.lower().endswith(valid_exts)])
+        except Exception as e:
+            self.send_message(f"❌ Dropbox list error: {e}", level=logging.ERROR)
+        return files
 
     def get_caption_from_config(self):
         try:
@@ -216,6 +224,7 @@ class DropboxToThreadsUploader:
 # --- Multi-account logic ---
 
 ACCOUNTS = [
+ 
     {
         "account_name": "eclipsed.by.you",
         "threads_user_id": os.getenv("THREADS_USER_ID"),
@@ -223,8 +232,7 @@ ACCOUNTS = [
         "dropbox_app_key": os.getenv("DROPBOX_APP_KEY"),
         "dropbox_app_secret": os.getenv("DROPBOX_APP_SECRET"),
         "dropbox_refresh_token": os.getenv("DROPBOX_REFRESH_TOKEN"),
-        "dropbox_folder": "/Threads_1",
-    
+        "dropbox_folder": "/threads_1",
     }
 ]
 
