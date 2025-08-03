@@ -133,7 +133,7 @@ class DropboxToThreadsUploader:
                 self.send_message(f"❌ No creation_id returned for {file.name}", level=logging.ERROR)
                 return False
             # Step 2: Poll status until fully processed
-            max_retries = 20
+            max_retries = 60
             for _ in range(max_retries):
                 poll_res = requests.get(f"{self.THREADS_API_BASE}/{creation_id}", params={"access_token": self.threads_access_token})
                 if poll_res.status_code != 200:
@@ -141,12 +141,13 @@ class DropboxToThreadsUploader:
                     return False
                 status = poll_res.json().get("status")
                 if status == "FINISHED":
-                    time.sleep(3)  # Give time for backend to finalize video
+                    self.send_message("Video processing FINISHED, waiting extra 3 seconds before publish...", level=logging.INFO)
+                    time.sleep(3)  # Increased wait for video backend
                     break
                 elif status == "ERROR":
                     self.send_message(f"❌ Transcode failed for {file.name}: {poll_res.text}", level=logging.ERROR)
                     return False
-                time.sleep(1)
+                time.sleep(4)
             # Step 3: Publish
             publish_url = f"{self.THREADS_API_BASE}/{self.threads_user_id}/threads_publish"
             publish_data = {
@@ -160,25 +161,27 @@ class DropboxToThreadsUploader:
                 time.sleep(5)
 
             # Safe retry-publish block
-            for attempt in range(3):
+            # Retry publishing until success or timeout (for videos)
+            max_wait = 180  # seconds (3 minutes)
+            interval = 5    # seconds between retries
+            start_time = time.time()
+            while True:
                 pub_res = requests.post(publish_url, data=publish_data)
                 if pub_res.status_code == 200:
                     self.send_message(f"✅ Successfully posted to Threads: {file.name}")
                     return True
                 else:
-                    # Check for specific error code (e.g. Threads backend delay)
-                    try:
-                        err_json = pub_res.json()
-                        error_code = err_json.get("error", {}).get("error_subcode")
-                        if error_code == 2207032:
-                            self.send_message(f"⚠️ Threads backend not ready yet, retrying... ({attempt + 1}/3)", level=logging.WARNING)
-                            time.sleep(5)
-                            continue
-                    except Exception:
-                        pass
-                    # Unknown error or not a retryable one
-                    self.send_message(f"❌ Threads publish failed: {file.name}\n{pub_res.text}", level=logging.ERROR)
-                    return False
+                    self.send_message(
+                        f"❌ Threads publish failed: {file.name}\n{pub_res.text}\nRetrying in {interval}s...",
+                        level=logging.ERROR
+                    )
+                    if time.time() - start_time > max_wait:
+                        self.send_message(
+                            f"❌ Threads publish failed after {int(max_wait)} seconds: {file.name}",
+                            level=logging.ERROR
+                        )
+                        return False
+                    time.sleep(interval)
             # If all retries failed
             self.send_message(f"❌ Threads publish failed after retries: {file.name}", level=logging.ERROR)
             return False
@@ -225,7 +228,7 @@ class DropboxToThreadsUploader:
 
 ACCOUNTS = [
  
-    {
+   {
         "account_name": "eclipsed.by.you",
         "threads_user_id": os.getenv("THREADS_USER_ID"),
         "threads_access_token": os.getenv("THREADS_ACCESS_TOKEN"),
