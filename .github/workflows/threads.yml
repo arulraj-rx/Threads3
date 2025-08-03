@@ -4,8 +4,8 @@ on:
   workflow_dispatch:  # Manual run button
   
   schedule:
-  - cron: '15 1 * * *'   # 06:45 AM IST   
-  - cron: '0 15 * * *'   # 08:30 PM IST  
+  - cron: '15 6 * * *'   # 06:45 AM IST   
+  - cron: '0 12 * * *'   # 08:30 PM IST  
   
 
 
